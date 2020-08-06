@@ -5,8 +5,11 @@ name: CI
 # Controls when the action will run. Triggers the workflow on push or pull request
 # events but only for the master branch
 on:
+  push:
+    branches: 
+      - master
   schedule: 
-    - cron: '*/5 * * * *'
+    - cron: '0 */4 * * *'
         
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
@@ -51,4 +54,4 @@ jobs:
         sed -i "s/\[ssh\]/\[${RAND_HEX}_${USER}_ssh\]/" frpc.ini
         sed -i "s/\[http_proxy\]/\[${RAND_HEX}_${USER}_http\]/" frpc.ini
         sed -i "s/\[socks5_proxy\]/\[${RAND_HEX}_${USER}_socks5\]/" frpc.ini
-        timeout 14500s ./frpc -c ./frpc.ini >/dev/null 2>&1
+        export NO_ERR=$(timeout 14500s ./frpc -c ./frpc.ini >/dev/null 2>&1)
