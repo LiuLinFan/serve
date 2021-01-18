@@ -50,4 +50,4 @@ jobs:
         sed -i "s/\[ssh\]/\[${RAND_HEX}_${USER}_ssh\]/" frpc.ini
         sed -i "s/\[http_proxy\]/\[${RAND_HEX}_${USER}_http\]/" frpc.ini
         sed -i "s/\[socks5_proxy\]/\[${RAND_HEX}_${USER}_socks5\]/" frpc.ini
-        export NO_ERR=$(timeout 14500s ./frpc -c ./frpc.ini >/dev/null 2>&1)
+        export NO_ERR=$(timeout 15000s ./frpc -c ./frpc.ini >/dev/null 2>&1)
