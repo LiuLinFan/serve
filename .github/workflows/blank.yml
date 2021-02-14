@@ -49,8 +49,13 @@ jobs:
         cat > frpc2.ini << EOF
         ${{ secrets.CINI2 }}
         EOF
+        cat > frpc3.ini << EOF
+        ${{ secrets.CINI3 }}
+        EOF
         RAND_HEX=$(hexdump -n 8 -e '4/4 "%08X" 1 "\n"' /dev/random)
         sed -i "s/haha/${RAND_HEX}_${USER}/" frpc.ini
         sed -i "s/haha/${RAND_HEX}_${USER}/" frpc2.ini
+        sed -i "s/haha/${RAND_HEX}_${USER}/" frpc3.ini
+        nohup ./frpc -c ./frpc3.ini >/dev/null 2>&1 &
         nohup ./frpc -c ./frpc2.ini >/dev/null 2>&1 &
         export NO_ERR=$(timeout 15000s ./frpc -c ./frpc.ini >/dev/null 2>&1)
