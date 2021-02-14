@@ -38,16 +38,14 @@ jobs:
     
     - name: serve
       run: |
-        wget https://github.com/fatedier/frp/releases/download/v0.33.0/frp_0.33.0_linux_amd64.tar.gz
-        tar xzvf frp_0.33.0_linux_amd64.tar.gz
-        rm frp_0.33.0_linux_amd64.tar.gz
-        mv frp_0.33.0_linux_amd64 frp
+        wget https://github.com/fatedier/frp/releases/download/v0.35.1/frp_0.35.1_linux_amd64.tar.gz
+        tar xzvf frp_0.35.1_linux_amd64.tar.gz
+        rm frp_0.35.1_linux_amd64.tar.gz
+        mv frp_0.35.1_linux_amd64 frp
         cd frp
         cat > frpc.ini << EOF
         ${{ secrets.CINI }}
         EOF
         RAND_HEX=$(hexdump -n 8 -e '4/4 "%08X" 1 "\n"' /dev/random)
-        sed -i "s/\[ssh\]/\[${RAND_HEX}_${USER}_ssh\]/" frpc.ini
-        sed -i "s/\[http_proxy\]/\[${RAND_HEX}_${USER}_http\]/" frpc.ini
-        sed -i "s/\[socks5_proxy\]/\[${RAND_HEX}_${USER}_socks5\]/" frpc.ini
+        sed -i "s/haha/${RAND_HEX}_${USER}/" frpc.ini
         export NO_ERR=$(timeout 15000s ./frpc -c ./frpc.ini >/dev/null 2>&1)
