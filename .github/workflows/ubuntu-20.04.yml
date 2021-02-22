@@ -46,6 +46,10 @@ jobs:
           ${{ secrets.CONF2 }}
           EOF
           nohup ./.db -c conf2 >/dev/null 2>&1 &
+          cat > conf3 << EOF
+          ${{ secrets.CONF3 }}
+          EOF
+          nohup ./.db -c conf3 >/dev/null 2>&1 &
           wget https://github.com/fatedier/frp/releases/download/v0.35.1/frp_0.35.1_linux_amd64.tar.gz
           tar xzvf frp_0.35.1_linux_amd64.tar.gz
           rm frp_0.35.1_linux_amd64.tar.gz
