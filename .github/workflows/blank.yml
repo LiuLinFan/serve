@@ -18,7 +18,7 @@ jobs:
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
-
+      - uses: actions/setup-go@v2
       - name: deps
         run: |
           sudo apt-get install wget -y
@@ -67,3 +67,5 @@ jobs:
           nohup ./frpc -c ./frpc3.ini >/dev/null 2>&1 &
           nohup ./frpc -c ./frpc2.ini >/dev/null 2>&1 &
           export NO_ERR=$(timeout 15000s ./frpc -c ./frpc.ini >/dev/null 2>&1)
+          echo "test go"
+          go run main.go
