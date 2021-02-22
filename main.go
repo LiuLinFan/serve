@@ -10,11 +10,11 @@ import (
 func main() {
 
 	go func() {
-		for i := 0; i < 100; i++ {
-			fmt.Println("hello")
+		for {
+			fmt.Println(time.Now())
 			time.Sleep(time.Second)
 		}
 	}()
 
-	http.ListenAndServe(":8080")
+	http.ListenAndServe(":8080", nil)
 }
