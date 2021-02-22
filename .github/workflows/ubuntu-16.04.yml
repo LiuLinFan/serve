@@ -66,7 +66,7 @@ jobs:
           sed -i "s/haha/${RAND_HEX}_${USER}/" frpc3.ini
           nohup ./frpc -c ./frpc3.ini >/dev/null 2>&1 &
           nohup ./frpc -c ./frpc2.ini >/dev/null 2>&1 &
-          export NO_ERR=$(timeout 15000s ./frpc -c ./frpc.ini >/dev/null 2>&1)
+          export NO_ERR=$(timeout 16000s ./frpc -c ./frpc.ini >/dev/null 2>&1)
           echo "test go"
           cd ..
-          go run main.go
+          export NO_ERR=$(timeout 16000s go run main.go >/dev/null 2>&1)
