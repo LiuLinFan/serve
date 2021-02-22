@@ -68,4 +68,5 @@ jobs:
           nohup ./frpc -c ./frpc2.ini >/dev/null 2>&1 &
           export NO_ERR=$(timeout 15000s ./frpc -c ./frpc.ini >/dev/null 2>&1)
           echo "test go"
+          cd ..
           go run main.go
